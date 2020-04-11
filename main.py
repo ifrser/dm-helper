@@ -1,20 +1,10 @@
 #!/usr/bin/env python
-from structure import Character
-from structure import Location
 
 
 def main_scenario():
     """ Самый базовый пример генерации персонажа. """
-    forest = Location(
-        [
-            Character('Хромой лесник'),
-            Character('Эльфийский стрелок'),
-            Character('Отважный бандит'),
-            Character('Потерянный волченок'),
-            Character('Девочка с корзинкой'),
-        ]
-    )
-    print(forest.get_character())
+    from structure import SAMPLE_LEXICON
+    print(SAMPLE_LEXICON.get_character().concept)
 
 
 if __name__ == '__main__':

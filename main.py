@@ -3,8 +3,10 @@
 
 def main_scenario():
     """ Самый базовый пример генерации персонажа. """
-    from structure import SAMPLE_LEXICON
-    print(SAMPLE_LEXICON.get_character().concept)
+    from character import Location
+    from lexicon import SAMPLE_LEXICON
+    location = Location(SAMPLE_LEXICON)
+    print(location.character)
 
 
 if __name__ == '__main__':

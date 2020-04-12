@@ -22,10 +22,10 @@ class Attribute:
             return f'{subject.value}{self.separator}{self.value}'
 
 
-ATTRIBUTE1 = Attribute('Хромой')
-ATTRIBUTE2 = Attribute('Эльфийский')
-ATTRIBUTE3 = Attribute('Отважный')
-ATTRIBUTE4 = Attribute('Потерянный')
+ATTRIBUTE1 = Attribute('хромой')
+ATTRIBUTE2 = Attribute('эльфийский')
+ATTRIBUTE3 = Attribute('отважный')
+ATTRIBUTE4 = Attribute('потеряный')
 ATTRIBUTE5 = Attribute('с корзинкой', does_go_first=False)
 ATTRIBUTE6 = Attribute('который никогда не спит', does_go_first=False, separator=', ')
 ATTRIBUTE7 = Attribute('оборотень', does_go_first=False, separator='-')
@@ -69,21 +69,6 @@ SIMPLIFIEDPHRASE3 = SimplifiedPhrase(attribute=ATTRIBUTE3, subject=SUBJECT3)
 
 
 @dataclass
-class Character:
-    """ Персонаж.
-
-    Атрибуты:
-     - concept -- образ персонажа, выраженный в самой краткой форме
-    """
-    concept: SimplifiedPhrase
-
-
-CHARACTER1 = Character(concept=SIMPLIFIEDPHRASE1)
-CHARACTER2 = Character(concept=SIMPLIFIEDPHRASE2)
-CHARACTER3 = Character(concept=SIMPLIFIEDPHRASE3)
-
-
-@dataclass
 class Lexicon:
     """ Лексикон местности. """
     attribute_list: List[Attribute]
@@ -99,13 +84,24 @@ class Lexicon:
         # TODO: typecheck
         self.subject_list.append(subject)
 
-    def get_character(self) -> Character:
-        """ Сгенерировать персонажа из лексикона данной местности. """
-        return Character(
-            concept=SimplifiedPhrase(
-                attribute=random.choice(self.attribute_list),
-                subject=random.choice(self.subject_list)
-            )
+    @property
+    def random_subject(self):
+        return random.choice(self.subject_list)
+
+    @property
+    def random_attribute(self):
+        return random.choice(self.attribute_list)
+
+    def get_phrase(self) -> SimplifiedPhrase:
+        """ Сгенерировать фразу из местного лексикона.
+
+        TODO: input list of arguments to set phrase parts
+        """
+        attribute = self.random_attribute
+        subject = self.random_subject
+        return SimplifiedPhrase(
+            attribute=attribute,
+            subject=subject
         )
 
 
@@ -114,4 +110,5 @@ SAMPLE_LEXICON = Lexicon(attribute_list=SAMPLE_ATTRIBUTE_LIST, subject_list=SAMP
 
 if __name__ == '__main__':
     # TODO: unittest
-    print(SAMPLE_LEXICON.get_character().concept)
+    # TODO: make samples for a class with static method
+    print(SAMPLE_LEXICON.get_phrase())

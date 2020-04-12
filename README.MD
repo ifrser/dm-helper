@@ -3,8 +3,9 @@
 
 #### Содержание проекта:
 - README.MD -- данное описание репозитория
+- character.py -- описание и генерация персонажа
+- lexicon.py -- описание структурированных фраз
 - main.py -- точка запуска
-- structure.py -- структура данных
 
 
 #### Описание персонажа включает:
@@ -14,9 +15,11 @@
 Чтобы сгенерировать персонажа, необходимо выбрать/создать лексикон.
 
 ```
->>> from structure import SAMPLE_LEXICON
->>> print(SAMPLE_LEXICON.get_character().concept)
+>>> from character import Location
+>>> from lexicon import SAMPLE_LEXICON
+>>> location = Location(SAMPLE_LEXICON)
+>>> print(location.character)
 
-Потерянный дерево
+Character(concept="волченок-оборотень")
 ```
 

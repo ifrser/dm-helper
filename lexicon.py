@@ -1,6 +1,10 @@
 from dataclasses import dataclass
+from pymorphy2 import MorphAnalyzer
 import random
 from typing import List
+
+morph = MorphAnalyzer()
+sentinel = object()
 
 
 @dataclass
@@ -13,13 +17,23 @@ class Attribute:
     def describe(self, subject) -> str:
         """ Определение c определяемым.
 
-        :type Subject subject: определяемое
+        :param Subject subject: определяемое
+
+        TODO: type refactor for semantics/syntax/morphology
         """
-        # TODO: согласованность по числу, роду, падежу, etc
+        word_morph = morph.parse(self.value)[0]
+        word_inflection = word_morph.inflect({subject.case,
+                                              subject.gender,
+                                              subject.number})
+        inflected_value = (
+            word_inflection.word
+            if word_inflection is not None
+            else self.value
+        )
         if self.does_go_first:
-            return f'{self.value}{self.separator}{subject.value}'
+            return f'{inflected_value}{self.separator}{subject.value}'
         else:
-            return f'{subject.value}{self.separator}{self.value}'
+            return f'{subject.value}{self.separator}{inflected_value}'
 
 
 ATTRIBUTE1 = Attribute('хромой')
@@ -37,6 +51,23 @@ SAMPLE_ATTRIBUTE_LIST = [ATTRIBUTE1, ATTRIBUTE2, ATTRIBUTE3, ATTRIBUTE4, ATTRIBU
 class Subject:
     """ Член предложение подлежащее. """
     value: str
+
+    def __post_init__(self):
+        word_parse = morph.parse(self.value)
+        chosen_word_morph = word_parse[0]
+        for word_morph in word_parse[1:]:
+            if word_morph.tag.case == 'nomn':
+                chosen_word_morph = word_morph
+                break
+            if word_morph.score <= 0.1:
+                break
+        self.case = chosen_word_morph.tag.case
+        self.number = chosen_word_morph.tag.number
+        self.gender = (
+            chosen_word_morph.tag.gender
+            if self.number != 'plur'
+            else 'plur'  # TODO: make more strict and general
+        )
 
     def described_by(self, attribute: Attribute) -> str:
         """ Строка описания подлежащего с определением. """

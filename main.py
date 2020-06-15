@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+import os
+
+from configuration import DATA_DIR
+from lexicon import Lexicon
 
 def main_scenario():
     """ Самый базовый пример генерации персонажа. """

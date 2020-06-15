@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from string import punctuation
 
 from pymorphy2 import MorphAnalyzer
 import random
@@ -25,9 +24,14 @@ class Attribute:
         TODO: type refactor for semantics/syntax/morphology
         """
         word_morph = morph.parse(self.value)[0]
-        word_inflection = word_morph.inflect({subject.case,
-                                              subject.gender,
-                                              subject.number})
+        word_inflection = word_morph.inflect(
+            set(
+                filter(
+                    None,
+                    {subject.case, subject.gender, subject.number}
+                    )
+            )
+        )
         inflected_value = (
             word_inflection.word
             if word_inflection is not None
@@ -52,7 +56,7 @@ SAMPLE_ATTRIBUTE_LIST = [ATTRIBUTE1, ATTRIBUTE2, ATTRIBUTE3, ATTRIBUTE4, ATTRIBU
 
 @dataclass
 class Subject:
-    """ Член предложение подлежащее. """
+    """ Член предложения подлежащее. """
     value: str
 
     def __post_init__(self):
@@ -185,4 +189,5 @@ SAMPLE_LEXICON = Lexicon(attribute_list=SAMPLE_ATTRIBUTE_LIST, subject_list=SAMP
 if __name__ == '__main__':
     # TODO: unittest
     # TODO: make samples for a class with static method
-    print(SAMPLE_LEXICON.get_phrase())
+    for _ in range(7):
+        print(SAMPLE_LEXICON.get_phrase())

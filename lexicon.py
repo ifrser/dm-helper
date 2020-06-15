@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+from string import punctuation
+
 from pymorphy2 import MorphAnalyzer
 import random
+import re
 from typing import List
 
 morph = MorphAnalyzer()
@@ -134,6 +137,46 @@ class Lexicon:
             attribute=attribute,
             subject=subject
         )
+
+    @staticmethod
+    def load_from_file(data_filepath):
+        """ Создать лексикон по данным из текстового файла.
+
+        Каждая строка файла представляет словосочетание.
+        Главная часть словосочетания выделена квадратными скобками,
+        остальная часть зависимая. Если квадратные скобки отсутствуют,
+        строка считается главной частью, без зависимой.
+        """
+        loaded_lexicon = Lexicon([], [])
+        with open(data_filepath) as f:
+            rows = f.readlines()
+        subject_pattern = re.compile(r'\[(.*)\]')
+        ending_punctuation_pattern = re.compile(r'[,. -]+$')
+        leading_punctuation_pattern = re.compile(r'^[,. -]+')
+        for row in (row.rstrip('\n') for row in rows):
+            #
+            subject_found = subject_pattern.search(row)
+            if not subject_found:
+                loaded_lexicon.allow_subject(Subject(value=row))
+                continue
+            #
+            subject_value = subject_found.group(1) if subject_found else row
+            subject = Subject(value=subject_value)
+            #
+            attribute_does_go_first = not subject_pattern.match(row)
+            attribute_value = subject_pattern.sub('', row)
+            punctuation_pattern = ending_punctuation_pattern if attribute_does_go_first else leading_punctuation_pattern
+            separator_found = punctuation_pattern.search(attribute_value)
+            attribute_separator = separator_found.group(0) if separator_found else ' '
+            attribute_value = attribute_value.strip(attribute_separator)
+            attribute = Attribute(value=attribute_value,
+                                  does_go_first=attribute_does_go_first,
+                                  separator=attribute_separator)
+            #
+            loaded_lexicon.allow_attribute(attribute)
+            loaded_lexicon.allow_subject(subject)
+            #
+        return loaded_lexicon
 
 
 SAMPLE_LEXICON = Lexicon(attribute_list=SAMPLE_ATTRIBUTE_LIST, subject_list=SAMPLE_SUBJECT_LIST)

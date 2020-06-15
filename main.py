@@ -5,6 +5,15 @@ import os
 from configuration import DATA_DIR
 from lexicon import Lexicon
 
+
+def alternative_scenario():
+    """ Создание лексикона по файлу с примерами. """
+    data_filepath = os.path.join(DATA_DIR, 'sample.txt')
+    sample_lexicon = Lexicon.load_from_file(data_filepath)
+    for _ in range(7):
+        print(sample_lexicon.get_phrase())
+
+
 def main_scenario():
     """ Самый базовый пример генерации персонажа. """
     from character import Location
@@ -14,4 +23,4 @@ def main_scenario():
 
 
 if __name__ == '__main__':
-    main_scenario()
+    alternative_scenario()
